@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        REPO_URL = 'git@github.com:pjoter1906/snakegame-gui.git'' // Fork repo
+        REPO_URL = 'git@github.com:pjoter1906/snakegame-gui.git' // Fork repo
         BRANCH = 'master'
         IMAGE_NAME = 'snakegame'
         TEST_IMAGE_NAME = 'snakegame-test'
@@ -11,11 +11,14 @@ pipeline {
     stages {
         stage('Checkout Code from Fork') {
             steps {
-                script {
-                    echo "Cloning repository: ${REPO_URL}"
-                    sh "rm -rf repo || true"
-                    sh "git clone -b ${BRANCH} ${REPO_URL} repo"
-                }
+        	checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/' + BRANCH]],
+                    userRemoteConfigs: [[
+                        url: REPO_URL,
+                        credentialsId: 'github-ssh-key' // Wpisz poprawny `credentialsId`
+                    ]]
+                ]]
             }
         }
 
