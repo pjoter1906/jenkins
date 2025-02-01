@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        REPO_URL = 'https://github.com/pjoter1906/snakegame-gui.git' // Fork repo
-        BRANCH = 'main'
+        REPO_URL = 'git@github.com:pjoter1906/snakegame-gui.git'' // Fork repo
+        BRANCH = 'master'
         IMAGE_NAME = 'snakegame'
         TEST_IMAGE_NAME = 'snakegame-test'
     }
