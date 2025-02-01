@@ -1,0 +1,5 @@
+# Użyj wcześniej zbudowanego obrazu aplikacji
+FROM snakegame
+
+# Ustawienie komendy do uruchamiania testów
+CMD ["pytest", "-s", "-v"]

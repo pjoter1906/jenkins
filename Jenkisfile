@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+
+    environment {
+        REPO_URL = 'https://github.com/pjoter1906/snakegame-gui.git' // Fork repo
+        BRANCH = 'main'
+        IMAGE_NAME = 'snakegame'
+        TEST_IMAGE_NAME = 'snakegame-test'
+    }
+
+    stages {
+        stage('Checkout Code from Fork') {
+            steps {
+                script {
+                    echo "Cloning repository: ${REPO_URL}"
+                    sh "rm -rf repo || true"
+                    sh "git clone -b ${BRANCH} ${REPO_URL} repo"
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    echo "Building application image from fork..."
+                    sh "cd repo && docker build -t ${IMAGE_NAME} -f Dockerfile ."
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    echo "Running tests using the built image from fork..."
+                    sh "cd repo && docker build -t ${TEST_IMAGE_NAME} -f Dockerfile.test ."
+                    sh "docker run --rm --network=host ${TEST_IMAGE_NAME}"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                echo "Cleaning up old images..."
+                sh "docker rmi -f ${IMAGE_NAME} ${TEST_IMAGE_NAME} || true"
+            }
+        }
+    }
+}
