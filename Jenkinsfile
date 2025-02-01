@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        REPO_URL = 'git@github.com:pjoter1906/snakegame-gui.git' // Fork repo
-        BRANCH = 'master'
+        REPO_URL = 'git@github.com:pjoter1906/snakegame-gui.git' /* Fork repo */
+        BRANCH = 'master'  
         IMAGE_NAME = 'snakegame'
         TEST_IMAGE_NAME = 'snakegame-test'
     }
@@ -11,14 +11,14 @@ pipeline {
     stages {
         stage('Checkout Code from Fork') {
             steps {
-        	checkout([
+                checkout([
                     $class: 'GitSCM',
-                    branches: [[name: '*/' + BRANCH]],
+                    branches: [[name: "*/${BRANCH}"]],
                     userRemoteConfigs: [[
                         url: REPO_URL,
-                        credentialsId: 'github-ssh-key' // Wpisz poprawny `credentialsId`
+                        credentialsId: 'github-ssh-key' // Klucz SSH do repozytorium
                     ]]
-                ]]
+                ])
             }
         }
 
@@ -26,7 +26,7 @@ pipeline {
             steps {
                 script {
                     echo "Building application image from fork..."
-                    sh "cd repo && docker build -t ${IMAGE_NAME} -f Dockerfile ."
+                    sh "docker build -t ${IMAGE_NAME} -f Dockerfile ."
                 }
             }
         }
@@ -35,7 +35,7 @@ pipeline {
             steps {
                 script {
                     echo "Running tests using the built image from fork..."
-                    sh "cd repo && docker build -t ${TEST_IMAGE_NAME} -f Dockerfile.test ."
+                    sh "docker build -t ${TEST_IMAGE_NAME} -f Dockerfile.test ."
                     sh "docker run --rm --network=host ${TEST_IMAGE_NAME}"
                 }
             }
@@ -51,3 +51,4 @@ pipeline {
         }
     }
 }
+
